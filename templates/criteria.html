@@ -7,13 +7,13 @@
     <title>Document</title>
 </head>
 <body>
-    <h2>Select a Term</h2>
-    <form action="/criteria"></form>
-    <select>
-        {% for each in list %}
-          <option value="{{each}}" >{{each}}</option>
-        {% endfor %}
-    </select>
-    <input type="submit" value="Continue" />
+    <h1>Filter Course</h1>
+    <form action="">
+        <div>{{ form.major.label }} {{ form.major }}</div>
+        <div>{{ form.campus.label }} {{ form.campus }}</div>
+        <div> {{ form.CRN }}</div>
+
+    </form>
+
 </body>
 </html>

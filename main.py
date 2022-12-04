@@ -4,7 +4,7 @@ import pymysql
 import sqlalchemy
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, SelectField
+from wtforms import StringField, PasswordField, SubmitField, SelectField, SelectMultipleField,widgets
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask_bcrypt import Bcrypt
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
@@ -59,6 +59,7 @@ class Student(db.Model):
 
 class Course(db.Model):
     __tablename__ = 'course'
+    number = db.Column('number',db.Integer, primary_key = True, nullable = False)
 
 class Campus(db.Model):
     __tablename__ = 'campus'
@@ -83,41 +84,43 @@ class LoginForm(FlaskForm):
     )
     submit = SubmitField('Login')    
 
+class MultiCheckboxField(SelectMultipleField):
+    widget = widgets.ListWidget(prefix_label=False)
+    option_widget = widgets.CheckboxInput()
+
 class CriteriaForm(FlaskForm):
+    semester = SelectField('semester', choices=('Spring 2023','Fall 2022','Summer 2022'))
     major = SelectField('major')
     number = StringField(render_kw={"placeholder": "example: CS5200"})
-    CRN = StringField(render_kw={"placeholder": "CRN"})
-    level = SelectField('level',choices=('graduate','undergraduate'))
+    keyword = StringField(render_kw={"placeholder": "class contains the word"})
+    CRN = StringField('CRN',render_kw={"placeholder": "CRN"})
+    level = SelectField('level', choices=('','graduate','undergraduate'))
     campus = SelectField('campus')
-    type = SelectField('type', choices=('offline','online','hybrid'))
+    type = SelectField('type', choices=('','offline','online','hybrid'))
+    days = MultiCheckboxField('days', choices=('MON','TUE','WED','THU','FRI','SAT','SUN'))
+    time_from1 = SelectField(choices=('','1','2','3','4','5','6','7','8','9','10','11','12'))
+    time_from2 = SelectField('from', choices=('','AM','PM'))
+    time_to1 = SelectField(choices=('','1','2','3','4','5','6','7','8','9','10','11','12'))
+    time_to2 = SelectField('to', choices=('','AM','PM'))
+    submit = SubmitField('Search')    
 
 class ProfessorForm(FlaskForm):
-    major = SelectField('major')
-    number = StringField(render_kw={"placeholder": "example: CS5200"})
-    CRN = StringField(render_kw={"placeholder": "CRN"})
-    level = SelectField('level')
-    campus = SelectField('campus')
-    type = SelectField('type', choices=('offline','online','hybrid'))    
+    name = StringField(render_kw={"placeholder": "name"})
+    field = SelectField('filed', choices=('teaching courses','working field'))
+
 
 @app.route("/")
 def homepage(methods = ['GET', 'POST']):
+    # campus = Student.query.filter_by(major='Software Engineering',type = 'grad')
+    # campus = Student.query.filter(major='Software Engineering').filter(type = 'grad')
+   
     # (test db connection purpose)response list all data in a table
     # campus = Campus.query.all()
-    response = list()
+    # response = list()
     # for cam in campus:
     #     response.append({
     #         "name" : cam.name,
-    #         "location": cam.location
-    #     })
-    # return make_response({
-    #     'status' : 'success',
-    #     'message': response
-    # }, 200)
-    # campus = Campus.query.with_entities(Campus.name)
-    # majors = Major.query.with_entities(Major.name)
-    # for cam in campus:
-    #     response.append({
-    #         "name" : maj.name,
+    #         "major": cam.major
     #     })
     # return make_response({
     #     'status' : 'success',
@@ -126,6 +129,7 @@ def homepage(methods = ['GET', 'POST']):
     form = LoginForm()
     return render_template("home.html", form = form)
 
+# To login, I only added one user to Users: please use: id=938372796, password=02031f84
 @app.route("/login", methods = ['GET', 'POST'])
 def login():
     global userID, userRole
@@ -172,11 +176,30 @@ def semester():
 def criteria():
     form = CriteriaForm()
     majors = [x[0] for x in Major.query.with_entities(Major.name)]
+    majors.insert(0, "")
     campus = [x[0] for x in Campus.query.with_entities(Campus.name)]
+    campus.insert(0, "")
     form.major.choices = majors
     form.campus.choices = campus
     return render_template('criteria.html',form = form)    
 
+@app.route('/search',  methods=['GET','POST'])
+def searchCourse():
+    form = request.form
+    semester = form['semester']
+    number = form['number'] 
+    CRN = form['CRN']
+    major = form['major']  
+    campus = form['campus'] 
+    keyword = form['keyword'] 
+    type = form['type'] 
+    level = form['level']
+    days = request.form.getlist('days')
+    time_from = form['time_from1'] + form['time_from2']
+    time_to = form['time_to1'] + form['time_to2']
+    print(semester,type,number,CRN,major, campus,keyword,type,level,days,time_from,time_to)    
+    
+    return render_template('browseClaases.html')   
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1', port=8080, debug=True)

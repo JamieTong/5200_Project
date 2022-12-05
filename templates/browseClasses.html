@@ -1,12 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+
+    <head>
+        <title>{{ title }}</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+      </head>
+
 <body>
-    <h1>Browse Class</h1>
+    {% block content %}
+    <table id="data" class="table table-striped">
+      <thead>
+        <tr>
+          <th>major</th>
+          <th>number</th>
+          <th>crn</th>
+          <th>name</th>
+          <th>seats</th>
+          <th>waitlist</th>
+          <th>prerequisite</th>
+          <th>type</th>
+          <th>level</th>
+          <th>campus</th>
+          <th>credit</th>
+          <th>time</th>
+          <th>meeting days</th>
+          <th>date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for course in courses %}
+          <tr>
+            <td>{{ course.major }}</td>
+            <td>{{ course.number }}</td>
+            <td>{{ course.crn }}</td>
+            <td>{{ course.name }}</td>
+            <td>{{ course.seats_avalible }}/{{course.total_seats}}</td>
+            <td>{{ course.wl_avalible }}/{{course.total_wl}}</td>
+            <td>{{ course.pre_requisite }}</td>
+            <td>{{ course.type }}</td>
+            <td>{{ course.level }}</td>
+            <td>{{ course.campus_name }}</td>
+            <td>{{ course.credit }}</td>
+            <td>{{ course.time_from }}-{{course.time_to}}</td>
+            <td>{{ course.days }}</td>
+            <td>{{ course.date }}</td>
+
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endblock %}
 </body>
+
 </html>

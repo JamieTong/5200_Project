@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request,url_for, redirect, make_response,flash
 from google.cloud.sql.connector import Connector
 import pymysql
-import sqlalchemy
+import sqlalchemy 
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, SelectField, SelectMultipleField,widgets
@@ -9,6 +9,8 @@ from wtforms.validators import InputRequired, Length, ValidationError
 from flask_bcrypt import Bcrypt
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from data import major_list
+from sqlalchemy.sql import text, select
+# from flask_table import Table, Col
 
 app = Flask(__name__)
 
@@ -51,7 +53,7 @@ class Student(db.Model):
     nuid = db.Column('nuid',db.Integer, primary_key = True, nullable = False)
     name = db.Column('name',db.String(50), nullable = False)
     entry_year = db.Column(db.Integer, nullable = False)
-    type = db.Column(db.String(50), nullable = False)
+    role = db.Column(db.String(50), nullable = False)
     min_credit = db.Column(db.Integer, nullable = False)
     department_id = db.Column(db.Integer, nullable = False)
     campus_name = db.Column(db.String(50), nullable = False)
@@ -60,6 +62,23 @@ class Student(db.Model):
 class Course(db.Model):
     __tablename__ = 'course'
     number = db.Column('number',db.Integer, primary_key = True, nullable = False)
+    seats_available = db.Column(db.Integer, nullable = False)
+    total_seats = db.Column(db.Integer, nullable = False)
+    wl_available = db.Column(db.Integer, nullable = False)
+    total_wl = db.Column(db.Integer, nullable = False)
+    pre_requisite = db.Column(db.String(50), nullable = False)
+    crn = db.Column(db.Integer, nullable = False)
+    name = db.Column(db.String(50), nullable = False)
+    type = db.Column(db.String(50), nullable = False)
+    level = db.Column(db.String(50), nullable = False)
+    semester = db.Column(db.String(50), nullable = False)
+    time_from = db.Column(db.String(50), nullable = False)
+    time_to = db.Column(db.String(50), nullable = False)
+    days = db.Column(db.String(50), nullable = False)
+    date = db.Column(db.String(50), nullable = False)
+    campus_name = db.Column(db.String(50), nullable = False)
+    credit = db.Column(db.Integer, nullable = False)
+    major = db.Column(db.String(50), nullable = False)
 
 class Campus(db.Model):
     __tablename__ = 'campus'
@@ -91,41 +110,47 @@ class MultiCheckboxField(SelectMultipleField):
 class CriteriaForm(FlaskForm):
     semester = SelectField('semester', choices=('Spring 2023','Fall 2022','Summer 2022'))
     major = SelectField('major')
-    number = StringField(render_kw={"placeholder": "example: CS5200"})
-    keyword = StringField(render_kw={"placeholder": "class contains the word"})
+    number = StringField('number',render_kw={"placeholder": "example: CS5200"})
+    keyword = StringField('keyword',render_kw={"placeholder": "class contains the word"})
     CRN = StringField('CRN',render_kw={"placeholder": "CRN"})
     level = SelectField('level', choices=('','graduate','undergraduate'))
     campus = SelectField('campus')
     type = SelectField('type', choices=('','offline','online','hybrid'))
     days = MultiCheckboxField('days', choices=('MON','TUE','WED','THU','FRI','SAT','SUN'))
-    time_from1 = SelectField(choices=('','1','2','3','4','5','6','7','8','9','10','11','12'))
-    time_from2 = SelectField('from', choices=('','AM','PM'))
-    time_to1 = SelectField(choices=('','1','2','3','4','5','6','7','8','9','10','11','12'))
-    time_to2 = SelectField('to', choices=('','AM','PM'))
+    time_from = SelectField('time_from',choices=('','01:00','02:00','03:00','04:00','05:00','06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00',
+    '18:00','19:00','20:00','21:00','22:00','23:00','00:00'))
+    time_to = SelectField('time_to',choices=('','01:00','02:00','03:00','04:00','05:00','06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00',
+    '18:00','19:00','20:00','21:00','22:00','23:00','00:00'))
     submit = SubmitField('Search')    
 
-class ProfessorForm(FlaskForm):
-    name = StringField(render_kw={"placeholder": "name"})
-    field = SelectField('filed', choices=('teaching courses','working field'))
+# class ProfessorForm(FlaskForm):
+#     name = StringField(render_kw={"placeholder": "name"})
+#     field = SelectField('filed', choices=('teaching courses','working field'))
 
+# class CourseTable(Table)
 
 @app.route("/")
 def homepage(methods = ['GET', 'POST']):
-    # campus = Student.query.filter_by(major='Software Engineering',type = 'grad')
-    # campus = Student.query.filter(major='Software Engineering').filter(type = 'grad')
-   
-    # (test db connection purpose)response list all data in a table
-    # campus = Campus.query.all()
-    # response = list()
-    # for cam in campus:
-    #     response.append({
-    #         "name" : cam.name,
-    #         "major": cam.major
+    name = 'Spring 2023'
+    semester_courses = Course.query.filter_by(semester = 'Spring 2023',campus_name = 'Boston',credit = 4)
+    # # (test db connection purpose)response list all data in a table
+
+    response = list()
+
+    # response.append({
+    #         "name" : student.name,
+    #         "major": student.major
     #     })
-    # return make_response({
-    #     'status' : 'success',
-    #     'message': response
-    # }, 200)
+    for course in semester_courses:
+        response.append({
+            "name" : course.name,
+            "total_wl": course.total_wl,
+            "level": course.level
+        })
+    return make_response({
+        'status' : 'success',
+        'message': response
+    }, 200)
     form = LoginForm()
     return render_template("home.html", form = form)
 
@@ -136,8 +161,10 @@ def login():
     form = LoginForm()
     # if form.validate_on_submit():
     user = Users.query.filter_by(id=form.id.data).first()
+    print('user found')
     if user:
         if (user.password == form.password.data):
+            print('password found')
             login_user(user)
             if user.role == "student":
                 return redirect(url_for('studentDashboard'))
@@ -163,6 +190,7 @@ def studentDashboard():
     name = student.name
     return render_template('studentDashboard.html',name=name)
 
+
 @app.route('/adminDashboard', methods=['GET'])
 def adminDashboard():
     return render_template('adminDashboard.html')
@@ -175,11 +203,11 @@ def semester():
 @app.route('/criteria', methods=['GET','POST'])
 def criteria():
     form = CriteriaForm()
-    majors = [x[0] for x in Major.query.with_entities(Major.name)]
-    majors.insert(0, "")
+    major = [x[0] for x in Major.query.with_entities(Major.name)]
+    major.insert(0, "")
     campus = [x[0] for x in Campus.query.with_entities(Campus.name)]
     campus.insert(0, "")
-    form.major.choices = majors
+    form.major.choices = major
     form.campus.choices = campus
     return render_template('criteria.html',form = form)    
 
@@ -195,11 +223,53 @@ def searchCourse():
     type = form['type'] 
     level = form['level']
     days = request.form.getlist('days')
-    time_from = form['time_from1'] + form['time_from2']
-    time_to = form['time_to1'] + form['time_to2']
-    print(semester,type,number,CRN,major, campus,keyword,type,level,days,time_from,time_to)    
-    
-    return render_template('browseClaases.html')   
+    time_from = form['time_from'] 
+    time_to = form['time_to'] 
+    equal_conditions = [('number',number),('CRN',CRN),('major',major),('campus_name',campus),
+    ('type',type),('level',level)] * 1
+
+    valid_equal_conditions = list()
+    valid_other_conditions = list()
+    for row in equal_conditions:
+        if (row[1] == '' or row[1] == ' ' or row[1] is None or not row[1]) == False:
+            valid_equal_conditions.append(row) 
+    for row in equal_conditions:
+        if (row[1] == '' or row[1] == ' ' or row[1] is None or not row[1]) == False:
+            valid_other_conditions.append(row)         
+    query_string = ('select * from course where semester = "{s}"').format(s=semester)
+    for row in valid_equal_conditions:
+        if row[0] == 'CRN':
+            query_string += (' and {a} = {b}').format(a = row[0],b = row[1])
+        else:
+            query_string += (" and {a} = '{b}'").format(a = row[0],b = row[1])
+    if keyword != '':
+        query_string += (" and name like '%{k}%'").format(k = keyword)
+    if not days:
+        for day in days:
+            query_string += (" and days like '{d}'").format(d = day)    
+    if time_from != '':
+        query_string += (" and time_from >= '{f}'").format(f = time_from)
+    if time_to != '':
+        query_string += (" and time_to <= '{t}'").format(t = time_to)  
+    if len(days) > 0:
+        for day in days:
+            query_string += (" and days like '%{d}%'").format(d = day)   
+    # SELECT * FROM course WHERE days LIKE '%FRI%' and days LIKE '%WED%';
+    print(query_string)   
+    courses = db.session.execute(select(Course).from_statement(text(query_string))).scalars().all()
+    # response = list()
+    # for course in courses:
+    #     response.append({
+    #         "name" : course.name,
+    #         "number": course.number,
+    #         "major": course.major
+    #     })
+    # return make_response({
+    #     'status' : 'success',
+    #     'message': response
+    # }, 200)
+
+    return render_template('browseClasses.html',courses = courses)   
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1', port=8080, debug=True)

@@ -12,20 +12,21 @@
         <div border-width:2px;> <img src="static/chicken.jpeg" class="logo-image"></div>
         <a href="" class="navbar-brand ">Wild Chicken University Course Registration System</a>
     </nav>
-    <h1 class="navbar-brand text-light">Enter Your Search Criteria</h1>
+    <h2 class=" text-light">Enter Your Search Criteria</h2>
     <form method="POST" action="/search" class="navbar-brand text-light">
         {{ form.hidden_tag() }}
-        <div>semester {{ form.semester }}</div>
-        <div>course number {{ form.number }}</div>
-        <div>CRN {{ form.CRN }}</div>
+        <div>{{ form.semester.lable }} semester {{ form.semester }}</div>
+        <div>{{ form.number.lable }} number {{ form.number }}</div>
+        <div>{{ form.CRN.label }} {{ form.CRN }}</div>
         <div>{{ form.major.label }} {{ form.major }}</div>
         <div>{{ form.campus.label }} {{ form.campus }}</div>
-        <div>keyword {{form.keyword}}</div>
-        <div>type {{ form.type }}</div>
-        <div>level {{ form.level }}</div>
-        <div>meeting days {{ form.days }}</div>
-        <div>start time{{ form.time_from1 }} AM/PM {{ form.time_from2 }}</div>
-        <div>end time {{ form.time_to1 }} AM/PM {{ form.time_to2 }}</div>
+        <div>{{ form.keyword.label }} {{form.keyword}}</div>
+        <div>{{ form.type.label }} {{ form.type }}</div>
+        <div>{{ form.level.label }} {{ form.level }}</div>
+        <div>{{ form.days.lable }} meeting days {{ form.days }}</div>
+        <div>time range</div>
+        <div>start time{{ form.time_from.lable }}{{ form.time_from }}</div>
+        <div>end time {{ form.time_to.lable }} {{ form.time_to }}</div>
         <div>{{ form.submit }}</div>
     </form>
 

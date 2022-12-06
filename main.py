@@ -10,6 +10,7 @@ from flask_bcrypt import Bcrypt
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from data import major_list
 from sqlalchemy.sql import text, select
+from datetime import datetime
 # from flask_table import Table, Col
 
 app = Flask(__name__)
@@ -90,6 +91,16 @@ class Major(db.Model):
     name = db.Column(db.String(50),primary_key = True, nullable = False)
     department_id = db.Column(db.Integer, nullable = False)
 
+
+class Registration(db.Model):
+    __tablename__ = 'registration'
+    crn = db.Column(db.Integer, primary_key = True,nullable = False)
+    nuid = db.Column(db.Integer, primary_key = True, nullable = False)
+    course_number = db.Column(db.String(50), nullable = False)
+    permission = db.Column(db.String(50), nullable = True)
+    registration_time = db.Column(db.String(50), nullable = True)
+
+
 class LoginForm(FlaskForm):
     id = StringField(
         validators=[
@@ -121,7 +132,7 @@ class CriteriaForm(FlaskForm):
     '18:00','19:00','20:00','21:00','22:00','23:00','00:00'))
     time_to = SelectField('time_to',choices=('','01:00','02:00','03:00','04:00','05:00','06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00',
     '18:00','19:00','20:00','21:00','22:00','23:00','00:00'))
-    submit = SubmitField('Search')    
+    submit = SubmitField('Search')  
 
 # class ProfessorForm(FlaskForm):
 #     name = StringField(render_kw={"placeholder": "name"})
@@ -195,10 +206,6 @@ def studentDashboard():
 def adminDashboard():
     return render_template('adminDashboard.html')
 
-@app.route('/semester', methods=['GET','POST'])
-def semester():
-    dropdown_list = ['Spring 2023','Fall 2022','Summer 2022']
-    return render_template('semester.html',list=dropdown_list)
 
 @app.route('/criteria', methods=['GET','POST'])
 def criteria():
@@ -270,6 +277,29 @@ def searchCourse():
     # }, 200)
 
     return render_template('browseClasses.html',courses = courses)   
+
+@app.route('/register',  methods=['POST'])
+def register():
+    form = request.form
+    nuid = current_user.get_id()
+    crn = form['crn']
+    course_number = form['number']
+    permission = "Allowed"
+    registration_time = datetime.now()
+
+    # sql_query = ('insert into registration VALUES({crn},{nuid},{course_number},"{permission}","{registration_time}")').format(crn=crn, nuid=nuid, course_number=course_number, permission=permission,registration_time=registration_time)
+    registration = Registration(crn=crn, nuid=nuid, course_number=course_number, permission=permission, registration_time=registration_time)
+    db.session.add(registration)
+    db.session.commit()
+    print(crn);
+    return "Success", 200, {"Access-Control-Allow-Origin": "*"}
+
+@app.route('/semester', methods=['GET','POST'])
+def semester():
+    nuid = current_user.get_id()
+    myCourses = db.session.execute(select(Registration).filter_by(nuid=nuid)).scalars().all()
+    terms = ['Spring 2023','Fall 2022','Summer 2022']
+    return render_template('semester.html', myCourses=myCourses, terms=terms)
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1', port=8080, debug=True)

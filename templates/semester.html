@@ -4,16 +4,53 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
     <title>Document</title>
 </head>
-<body>
-    <h2>Select a Term</h2>
-    <form action="/criteria"></form>
-    <!-- <select>
+<h4>View My Registration</h4>
+
+<!--     <h5>Select a Term</h2> --> 
+
+  <!--   <form action="/criteria"></form>
+    <select>
         {% for each in list %}
           <option value="{{each}}" >{{each}}</option>
         {% endfor %}
-    </select> -->
-    <input type="submit" value="Continue" />
+    </select>
+    <input type="submit" value="Continue" /> -->
+
+<body>
+    <form action="/criteria" method="POST">
+      <label>Select a Term</label>
+        <select name="terms">
+          {% for term in terms %}
+            <option value="{{ term }}" SELECTED>{{ term }}</option>
+          {% endfor %}     
+        </select>
+<!--         <input type="submit" value="Continue" />  -->
+    </form>
+
+    <table id="data" class="table table-striped">
+      <thead>
+        <tr>
+          <th>crn</th>
+          <th>nuid</th>
+          <th>course_number</th>
+          <th>permission</th>
+          <th>registration_time</th>
+        </tr>
+      </thead>
+        <tbody>
+            {% for myCourse in myCourses %}
+              <tr id={{loop.index}}>
+                <td>{{ myCourse.crn }}</td>
+                <td>{{ myCourse.nuid }}</td>
+                <td>{{ myCourse.course_number }}</td>
+                <td>{{ myCourse.permission }}</td>
+                <td>{{ myCourse.registration_time }}</td>
+              </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>

@@ -25,31 +25,39 @@
           <th>time</th>
           <th>meeting days</th>
           <th>date</th>
+          <th>Add</th>
         </tr>
       </thead>
       <tbody>
         {% for course in courses %}
-          <tr>
-            <td>{{ course.major }}</td>
-            <td>{{ course.number }}</td>
-            <td>{{ course.crn }}</td>
-            <td>{{ course.name }}</td>
-            <td>{{ course.seats_avalible }}/{{course.total_seats}}</td>
-            <td>{{ course.wl_avalible }}/{{course.total_wl}}</td>
-            <td>{{ course.pre_requisite }}</td>
-            <td>{{ course.type }}</td>
-            <td>{{ course.level }}</td>
-            <td>{{ course.campus_name }}</td>
-            <td>{{ course.credit }}</td>
-            <td>{{ course.time_from }}-{{course.time_to}}</td>
-            <td>{{ course.days }}</td>
-            <td>{{ course.date }}</td>
-
+          <tr id={{loop.index}}>
+            <td class="row-data">{{ course.major }}</td>
+            <td class="row-data">{{ course.number }}</td>
+            <td class="row-data">{{ course.crn }}</td>
+            <td class="row-data">{{ course.name }}</td>
+            <td class="row-data">{{ course.seats_avalible }}/{{course.total_seats}}</td>
+            <td class="row-data">{{ course.wl_avalible }}/{{course.total_wl}}</td>
+            <td class="row-data">{{ course.pre_requisite }}</td>
+            <td class="row-data">{{ course.type }}</td>
+            <td class="row-data">{{ course.level }}</td>
+            <td class="row-data">{{ course.campus_name }}</td>
+            <td class="row-data">{{ course.credit }}</td>
+            <td class="row-data">{{ course.time_from }}-{{course.time_to}}</td>
+            <td class="row-data">{{ course.days }}</td>
+            <td class="row-data">{{ course.date }}</td>
+            <td>
+              <form method="POST" action="/register" class="navbar-brand text-light">
+                <input id="crn" name="crn" type="hidden" value={{ course.crn }}>
+                <input id="number" name="number" type="hidden" value={{ course.number }}>
+                <button type="submit">Add</button>
+              </form>
+            </td>
           </tr>
+          
+
         {% endfor %}
       </tbody>
     </table>
   {% endblock %}
 </body>
-
 </html>

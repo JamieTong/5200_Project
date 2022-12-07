@@ -16,7 +16,7 @@ app = Flask(__name__)
 # Google Cloud SQL 
 PASSWORD ="1234"
 USER = "root"
-PUBLIC_IP_ADDRESS ="35.235.120.25"
+PUBLIC_IP_ADDRESS ="10.17.176.3"
 DBNAME ="project"
 INSTANCE_NAME ="wide-cathode-362521:us-west2:newdb"
 MY_SQLALCHEMY_DATABASE_URI = (
@@ -411,4 +411,4 @@ def updatePermission():
     return(redirect('/editPermission'))
 
 if __name__ == "__main__":
-    app.run(host='127.0.0.1', port=8080, debug=True)
+    app.run(host="0.0.0.0", port=8080, debug=True)

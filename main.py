@@ -336,6 +336,10 @@ def register():
     other_section = Registration.query.filter_by(nuid=nuid, course_number = course_number).first()
     student = Student.query.filter_by(nuid=nuid).first()
     student_campus = student.campus_name
+    if student_campus == 'Silicon Valley':
+        student_campus = 'Silicon'
+    print(student_campus)
+    print("course campus "+ course_campus)
     student_level = student.role
     if student_level == 'grad' and level == 'undergraduate':
         return(redirect('/semester'))

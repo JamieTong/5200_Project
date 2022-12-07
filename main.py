@@ -261,9 +261,11 @@ def search():
         for day in days:
             query_string += (" and days like '%{d}%'").format(d = day)   
     # SELECT * FROM course WHERE days LIKE '%FRI%' and days LIKE '%WED%';
-    print(query_string)   
-    courses = Course.query.from_statement(db.text(query_string))
-    # courses = db.session.execute(select(Course).from_statement(text(query_string))).scalars().all()
+
+    print(query_string)
+    print('register')   
+    # courses = Course.query.from_statement(db.text(query_string))
+    courses = db.session.execute(query_string)
 
     return render_template('browseClasses.html',courses = courses)   
 
@@ -310,11 +312,14 @@ def searchCourse():
     if len(days) > 0:
         for day in days:
             query_string += (" and days like '%{d}%'").format(d = day)   
-    print(query_string)   
-    
-    courses = Course.query.from_statement(db.text(query_string))
-    # courses = db.session.execute(select(Course).from_statement(text(query_string))).scalars().all()
+    print(query_string) 
 
+    
+    # courses = Course.query.from_statement(db.text(query_string)).all()
+    courses = db.session.execute(query_string)
+    # courses = db.session.execute(select(Course).from_statement(text(query_string)))
+
+    print(courses)
     return render_template('classes.html',courses = courses)   
 
 @app.route('/register',  methods=['POST'])
@@ -323,9 +328,31 @@ def register():
     nuid = current_user.get_id()
     crn = form['crn']
     course_number = form['number']
+    course_campus = form['campus_name']
+    level = form['level']
+    print('course_campuse' + course_campus)
+    print('course_numbers' + course_number)
+    exist_same_CRN = Registration.query.filter_by(crn=crn,nuid=nuid).first()
+    other_section = Registration.query.filter_by(nuid=nuid, course_number = course_number).first()
+    student = Student.query.filter_by(nuid=nuid).first()
+    student_campus = student.campus_name
+    student_level = student.role
+    if student_level == 'grad' and level == 'undergraduate':
+        return(redirect('/semester'))
+    if student_level == 'undergrad' and level == 'graduate':
+        return(redirect('/semester'))    
+    # print(exist.course_number)
+    if exist_same_CRN is not None:
+        print("there exist same crn registration")
+        return(redirect('/semester'))
+    if other_section is not None:
+        print("there exist same course other section")
+        return(redirect('/semester'))
+    if course_campus != 'Online' and student_campus != course_campus:
+        print("can't register outside your campus")
+        return(redirect('/semester')) 
     permission = "Approve"
     registration_time = datetime.now()
-
     # sql_query = ('insert into registration VALUES({crn},{nuid},{course_number},"{permission}","{registration_time}")').format(crn=crn, nuid=nuid, course_number=course_number, permission=permission,registration_time=registration_time)
     registration = Registration(crn=crn, nuid=nuid, course_number=course_number, permission=permission, registration_time=registration_time)
     db.session.add(registration)
@@ -337,7 +364,9 @@ def register():
 def semester():
     id = current_user.get_id()
     # reg = Registration.query.join(Student).filter(Registration,nuid = Registration.nuid)
-
+    student = Student.query.filter_by(nuid=id).first()
+    campus = student.campus_name 
+    role = student.role 
     regs = db.session.query(
          Registration.crn, Registration.course_number,Course.name, Registration.nuid, Registration.registration_time, Registration.permission
     ).filter(
@@ -349,7 +378,7 @@ def semester():
 
     # myCourses = db.session.execute(select(Registration).filter_by(nuid=nuid)).scalars().all()
     # terms = ['Spring 2023','Fall 2022','Summer 2022']
-    return render_template('student_view.html', regs=regs)
+    return render_template('student_view.html', regs=regs,campus = campus,level =role)
 
 @app.route('/dropClass', methods = ['POST'])
 def dropClass():

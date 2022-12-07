@@ -1,15 +1,12 @@
-from flask import Flask, render_template, request,url_for, redirect, make_response,flash
-from google.cloud.sql.connector import Connector
+from flask import Flask, render_template, request,url_for, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, SelectField, SelectMultipleField,widgets
-from wtforms.validators import InputRequired, Length, ValidationError
-from flask_bcrypt import Bcrypt
+from wtforms.validators import InputRequired, Length
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
-from data import major_list
 from sqlalchemy.sql import text, select
 from datetime import datetime
-# from flask_table import Table, Col
+
 
 app = Flask(__name__)
 
@@ -30,7 +27,7 @@ app.config["SQLALCHEMY_DATABASE_URI"]= MY_SQLALCHEMY_DATABASE_URI
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]= True
 
 db=SQLAlchemy(app)
-# bcrypt = Bcrypt(app)
+
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -265,7 +262,8 @@ def search():
             query_string += (" and days like '%{d}%'").format(d = day)   
     # SELECT * FROM course WHERE days LIKE '%FRI%' and days LIKE '%WED%';
     print(query_string)   
-    courses = db.session.execute(select(Course).from_statement(text(query_string))).scalars().all()
+    courses = Course.query.from_statement(db.text(query_string))
+    # courses = db.session.execute(select(Course).from_statement(text(query_string))).scalars().all()
 
     return render_template('browseClasses.html',courses = courses)   
 
@@ -312,9 +310,10 @@ def searchCourse():
     if len(days) > 0:
         for day in days:
             query_string += (" and days like '%{d}%'").format(d = day)   
-    # SELECT * FROM course WHERE days LIKE '%FRI%' and days LIKE '%WED%';
     print(query_string)   
-    courses = db.session.execute(select(Course).from_statement(text(query_string))).scalars().all()
+    
+    courses = Course.query.from_statement(db.text(query_string))
+    # courses = db.session.execute(select(Course).from_statement(text(query_string))).scalars().all()
 
     return render_template('classes.html',courses = courses)   
 
@@ -324,7 +323,7 @@ def register():
     nuid = current_user.get_id()
     crn = form['crn']
     course_number = form['number']
-    permission = "Allowed"
+    permission = "Approve"
     registration_time = datetime.now()
 
     # sql_query = ('insert into registration VALUES({crn},{nuid},{course_number},"{permission}","{registration_time}")').format(crn=crn, nuid=nuid, course_number=course_number, permission=permission,registration_time=registration_time)

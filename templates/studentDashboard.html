@@ -14,14 +14,24 @@
     </nav>
     <h2 align="center">Hello {{name}}</h2>
     <h1 align="center">Your Course Registration Dashboard</h1>
+    <br>
+    <br>
     <div class="dashboardBlock">
-        <a href="{{url_for('criteria')}}">Browse Class</a>
+        <a href="{{url_for('filter')}}" class="btn btn-success ">Browse Class</a>
     </div>
+    <br>
     <div class="dashboardBlock">
-        <a href="{{url_for('criteria')}}">Register Class</a>
+        <a href="{{url_for('criteria')}}" class="btn btn-success ">Register Class</a>
     </div>
+   <br>
     <div class="dashboardBlock">
-        <a href="{{url_for('semester')}}">View My Registration</a>
+        <a href="{{url_for('semester')}}" class="btn btn-dark">View My Registration</a>
+    </div>
+    <br>
+    <br>
+    <br>
+    <div class="dashboardBlock">
+        <a href="{{url_for('logout')}}" class="btn btn-secondary">Logout</a>
     </div>
 
 </body>

@@ -10,25 +10,25 @@
 <body class="bg-white">
     <nav class="navbar bg-white">
         <div border-width:2px;> <img src="static/chicken.jpeg" class="logo-image"></div>
-        <a href="{{url_for('studentDashboard')}}"  class="navbar-brand ">Wild Chicken University Course Registration System</a>
+        <a href="{{url_for('studentDashboard')}}" class="navbar-brand ">Wild Chicken University Course Registration System</a>
     </nav>
     <div>
         <a href="{{url_for('studentDashboard')}}" class="text-light" align ="center">Back to Dashboard</a>
     </div>
-    <h3 class="left">Enter Your Search Criteria</h3>
-    <form method="POST" action="/search" class="navbar-brand left">
+    <h2 class="left">Enter Your Search Criteria</h2>
+    <form method="POST" action="/searchCourse" class="navbar-brand left">
         {{ form.hidden_tag() }}
         <div class="form-label">{{ form.semester.lable }} semester {{ form.semester }}</div>
-        <div class="form-label">{{ form.number.lable }} number  {{ form.number }}</div>
-        <div class="form-label">{{ form.CRN.label }}   {{ form.CRN }}</div>
+        <div class="form-label">{{ form.number.lable }} number {{ form.number }}</div>
+        <div class="form-label">{{ form.CRN.label }} {{ form.CRN }}</div>
         <div class="form-label">{{ form.major.label }} {{ form.major }}</div>
         <div class="form-label">{{ form.campus.label }} {{ form.campus }}</div>
         <div class="form-label">{{ form.keyword.label }} {{form.keyword}}</div>
         <div class="form-label">{{ form.type.label }} {{ form.type }}</div>
         <div class="form-label">{{ form.level.label }} {{ form.level }}</div>
-        <div class="form-label">{{ form.days.lable }} meeting days: {{ form.days }}</div>
-        <div class="form-label" >time range:</div>
-        <div class="form-label">start time {{ form.time_from.lable }}{{ form.time_from }}</div>
+        <div class="form-label">{{ form.days.lable }} meeting days {{ form.days }}</div>
+        <div class="form-label">time range:</div>
+        <div  class="form-label">start time {{ form.time_from.lable }}{{ form.time_from }}</div>
         <div class="form-label">end time {{ form.time_to.lable }} {{ form.time_to }}</div>
         <div class="form-label">{{ form.submit }}</div>
     </form>

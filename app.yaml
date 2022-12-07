@@ -1,3 +1,6 @@
 runtime: python39
-beta_settings:
-    cloud_sql_instances: wide-cathode-362521:us-central1:team13
+env: flex
+entrypoint: gunicorn -b :$PORT main:app
+
+# beta_settings:
+#     cloud_sql_instances: wide-cathode-362521:us-central1:team13

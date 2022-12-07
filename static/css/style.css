@@ -45,9 +45,14 @@
     text-align: center;
     text-decoration: none;
     display: inline-block;
+}
 
-  }
-  
+.center{
+    text-align: center;
+}
+.left{
+    margin-left:30px;
+} 
   /* a:hover, a:active {
     background-color: red;
   } */

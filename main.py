@@ -372,12 +372,20 @@ def semester():
     campus = student.campus_name 
     role = student.role 
     regs = db.session.query(
-         Registration.crn, Registration.course_number,Course.name, Registration.nuid, Registration.registration_time, Registration.permission
+         Course.semester, Course.name, Registration.crn, Registration.course_number,Course.campus_name, Registration.nuid, Registration.registration_time, Registration.permission
     ).filter(
-         Registration.crn == Course.crn
-    ).filter_by(
-         nuid = id
+         Registration.crn == Course.crn,
+    ).filter(
+         Registration.nuid == id
     ).all()
+
+    # regs = db.session.query(
+    #      Registration.crn, Registration.course_number,Course.name, Registration.nuid, Registration.registration_time, Registration.permission
+    # ).filter(
+    #      Registration.crn == Course.crn
+    # ).filter_by(
+    #      nuid = id
+    # ).all()
     print(regs)
 
     # myCourses = db.session.execute(select(Registration).filter_by(nuid=nuid)).scalars().all()

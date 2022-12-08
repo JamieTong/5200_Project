@@ -26,12 +26,14 @@
     <table id="data" class="table table-striped">
       <thead>
         <tr>
-          <th>Course CRN</th>
-          <th>Course Number</th>
-          <th>Course Name</th>
-          <th>Student WUID</th>
-          <th>Registration Time</th>
-          <th>Permission</th>
+          <th>semester</th>
+          <th>course name</th>
+          <th>crn</th>
+          <th>course number</th>
+          <th>campus</th>
+          <th>nuid</th>
+          <th>registration_time</th>
+          <th>permission</th>
         </tr>
       </thead>
       <tbody>
@@ -43,7 +45,9 @@
             <td class="row-data">{{ row[3] }}</td>
             <td class="row-data">{{ row[4] }}</td>
             <td class="row-data">{{ row[5] }}</td>
-
+            <td class="row-data">{{ row[6] }}</td>
+            <td class="row-data">{{ row[7] }}</td>
+            <td class="row-data">{{ row[8] }}</td>
             <td>
                 <form method="POST" action="/dropClass" class="navbar-brand text-light">
                   <input id="crn" name="crn" type="hidden" value= {{ row[0] }}>
